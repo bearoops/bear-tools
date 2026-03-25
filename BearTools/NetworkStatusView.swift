@@ -19,24 +19,15 @@ class NetworkViewModel: ObservableObject {
     
     init() {
         // 订阅网络状态
-        networkMonitor.networkStatus
+        networkMonitor.networkStatusChanged
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] status in
-                self?.networkStatus = status
-                self?.updateNetworkQuality(status)
+            .sink { [weak self] changed in
+                self?.networkStatus = changed.new
+                self?.updateNetworkQuality(changed.new)
+                self?.isOnline = changed.new.isAvailable
             }
             .store(in: &cancellables)
-        // 订阅网络可用性
-        networkMonitor.isNetworkAvailable
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.isOnline, on: self)
-            .store(in: &cancellables)
         demoUsage()
-        networkMonitor.startMonitoring()
-    }
-    
-    deinit {
-        networkMonitor.stopMonitoring()
     }
     
     private func updateNetworkQuality(_ status: NetworkMonitor.NetworkStatus) {
@@ -91,13 +82,10 @@ class NetworkViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         // 订阅蜂窝网络详情
-        networkMonitor.cellularDetails
-            .compactMap { $0 }
+        networkMonitor.cellularDetailsChanged
+            .compactMap { $0.new }
             .sink { details in
                 print("蜂窝网络: \(details.generation.description)")
-                if let carrier = details.carrierName {
-                    print("运营商: \(carrier)")
-                }
             }
             .store(in: &cancellables)
         networkMonitor.vpnStatusChanged
@@ -106,6 +94,7 @@ class NetworkViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+    
 }
 
 struct NetworkStatusView: View {
@@ -120,11 +109,9 @@ struct NetworkStatusView: View {
                           (viewModel.networkStatus.isWifi ? Color.blue : Color.green)
                           : Color.red)
                     .frame(width: 10, height: 10)
-                
                 VStack(alignment: .leading) {
                     Text(viewModel.networkStatus.description)
                         .font(.headline)
-                    
                     Text(viewModel.networkQuality)
                         .font(.caption)
                         .foregroundColor(.secondary)
