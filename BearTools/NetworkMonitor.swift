@@ -184,16 +184,15 @@ extension NetworkMonitor {
     }
     
     enum CellularGeneration: Equatable {
-        case g2, g3, g4, g5, lteAdvanced, unknown
+        case unknown, g2, g3, g4, g5
         
         var description: String {
             switch self {
+            case .unknown: return ""
             case .g2: return "2G"
             case .g3: return "3G"
             case .g4: return "4G"
             case .g5: return "5G"
-            case .lteAdvanced: return "LTE Advanced"
-            case .unknown: return "未知"
             }
         }
         
@@ -206,7 +205,7 @@ extension NetworkMonitor {
             switch self {
             case .g2, .g3:
                 return true
-            case .g4, .g5, .lteAdvanced, .unknown:
+            case .g4, .g5, .unknown:
                 return false
             }
         }
@@ -214,7 +213,7 @@ extension NetworkMonitor {
         /// 是否为高速网络
         var isHighSpeedNetwork: Bool {
             switch self {
-            case .g4, .g5, .lteAdvanced:
+            case .g4, .g5:
                 return true
             case .g2, .g3, .unknown:
                 return false
@@ -282,7 +281,7 @@ extension NetworkMonitor {
             switch generation {
             case .g2, .g3:
                 return .low
-            case .g4, .lteAdvanced:
+            case .g4:
                 return .medium
             case .g5:
                 return .high
@@ -317,7 +316,7 @@ extension NetworkMonitor {
             switch generation {
             case .g2, .g3:
                 return .low144p
-            case .g4, .lteAdvanced:
+            case .g4:
                 return .sd480p
             case .g5:
                 return .hd720p

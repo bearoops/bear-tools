@@ -38,7 +38,7 @@ class NetworkViewModel: ObservableObject {
                 networkQuality = "低速网络 (2G)"
             case .g3:
                 networkQuality = "中速网络 (3G)"
-            case .g4, .lteAdvanced:
+            case .g4:
                 networkQuality = "高速网络 (4G)"
             case .g5:
                 networkQuality = "超高速网络 (5G)"
@@ -71,7 +71,7 @@ class NetworkViewModel: ObservableObject {
                     switch generation {
                     case .g2, .g3:
                         print("网络较慢 (\(generation.description))，启用低质量模式")
-                    case .g4, .g5, .lteAdvanced:
+                    case .g4, .g5:
                         print("高速网络 (\(generation.description))，可进行高质量传输")
                     case .unknown:
                         print("未知蜂窝网络")
@@ -150,7 +150,7 @@ struct NetworkStatusView: View {
                 Text("• 网络较慢，建议开启低流量模式")
                 Text("• 避免观看高清视频")
                 Text("• 优先使用文字聊天")
-            case .g4, .lteAdvanced:
+            case .g4:
                 Text("• 可正常观看标清视频")
                 Text("• 适合图片浏览和文件下载")
             case .g5:
